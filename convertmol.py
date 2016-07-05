@@ -309,14 +309,15 @@ def parse_molefile(filename,verbose = False,properties=False,n=-1):
             if not line == "$$$$":
                 curr.append(line)
             else:
-                ret.append(parse_mol(curr,verbose,properties))
+                if len(curr) > 0:
+                    ret.append(parse_mol(curr,verbose,properties))    
+                    count += 1
+                    if n > 0 and count > n:
+                        break
                 curr = []
-                count += 1
-                if n > 0 and count > n:
-                    break
     return ret
 
 if __name__ == '__main__':
-    #mols = parse_molefile("./example.mol",True,True,n=5)
-    mols = parse_molefile("./testSDFs/Compound_000000001_000025000.sdf",True,True,n=1)
+    mols = parse_molefile("./example.mol",True,True,n=5)
+    #mols = parse_molefile("./testSDFs/Compound_000000001_000025000.sdf",True,True,n=1)
     pprint(mols)
