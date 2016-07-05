@@ -142,43 +142,46 @@ def parse_prop_name(line):
     return line[first:last]
 
 def apply_m_chg(line,mol):
-    print('apply_m_chg')
+    #print('apply_m_chg')
     for k in mol:
-        if k[0:4] == "atom":
+        if k.startswith('?atom'):
+        #if k[0:5] == "?atom":
             mol[k]["charge"] = "0"
-    print(line)
-    print(line[9:])
+    #print(line)
+    #print(line[9:])
     for i in range(9,len(line),8):
         aaa = line[i:i+4].strip()
         vvv = line[i+4:i+8].strip()
-        print(str(i),aaa,vvv)
+        #print(str(i),aaa,vvv)
         #pprint(mol)
         if vvv[0] == "-":
-            mol["atom"+aaa]["charge"] = vvv    
+            mol["?atom"+aaa]["charge"] = vvv    
         else:
-            mol["atom"+aaa]["charge"] = "+"+vvv
+            mol["?atom"+aaa]["charge"] = "+"+vvv
 #123456789A123456789B123456789
 #M  CHG  2   2  -1   5   1
 def apply_m_rad(line,mol):
     for k in mol:
-        if k[0:4] == "atom":
+        if k.startswith('?atom'):
+        #if k[0:4] == "atom":
             mol[k]["charge"] = "0"
             mol[k]["radical"] = "no radical"
 
     for i in range(11,len(line),6):
         aaa = line[i:i+3].strip()
         vvv = int(float(line[i+3:i+6].strip()))
-        mol["atom"+aaa]["radical"] = radical_dict[vvv]
+        mol["?atom"+aaa]["radical"] = radical_dict[vvv]
 
 def apply_m_iso(line,mol):
     for k in mol:
-        if k[0:4] == "atom":
+        if k.startswith('?atom'):
+        #if k[0:4] == "atom":
             mol[k]["mass_diff"] = "0"
 
     for i in range(11,len(line),6):
         aaa = line[i:i+3].strip()
         vvv = line[i+3:i+6].strip()
-        mol["atom"+aaa]["mass_diff"] = "+"+radical_dict[vvv]
+        mol["?atom"+aaa]["mass_diff"] = "+"+radical_dict[vvv]
 
 
 def parse_mol(lines, verbose = False, properties=False):
@@ -239,21 +242,21 @@ def parse_mol(lines, verbose = False, properties=False):
             atom["hydrogen_count"] = h_count_dict[a_line["hhh"]]
 
 
-        mol["atom"+str(l+1)] = atom
+        mol["?atom"+str(l+1)] = atom
 
     for l,line in enumerate(lines[atom_dex:bond_dex]):
-        bond = []
+        bond = ['bond']
         b_line = parse_bond_line(line)
 
         bond.append(bond_type_dict[b_line["ttt"]])
         if bond_type_dict[b_line["ttt"]] == "Single":
-            bond.append(single_bond_stereo_dict[b_line["sss"]])
+            bond.append(single_bond_stereo_dict[b_line["sss"]].replace(' ','_'))
         elif bond_type_dict[b_line["ttt"]] == "Double":
-            bond.append(double_bond_stereo_dict[b_line["sss"]])
-        bond.append("atom"+str(b_line["111"]))
-        bond.append("atom"+str(b_line["222"]))
+            bond.append(double_bond_stereo_dict[b_line["sss"]].replace(' ','_'))
+        bond.append("?atom"+str(b_line["111"]))
+        bond.append("?atom"+str(b_line["222"]))
 
-        mol["bond"+str(l+1)] = bond
+        mol['('+' '.join(bond)+')'] = True
 
     Ms = []
     for line in lines[bond_dex:]:
@@ -313,8 +316,7 @@ def parse_molefile(filename,verbose = False,properties=False,n=-1):
                     break
     return ret
 
-
-
 if __name__ == '__main__':
-    mols = parse_molefile("./testSDFs/Compound_000000001_000025000.sdf",True,True,n=5)
+    #mols = parse_molefile("./example.mol",True,True,n=5)
+    mols = parse_molefile("./testSDFs/Compound_000000001_000025000.sdf",True,True,n=1)
     pprint(mols)
