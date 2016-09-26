@@ -170,7 +170,7 @@ def apply_m_chg(line,mol):
     if len(line) == 0:
         return mol
     for k in mol:
-        if k.startswith('?atom'):
+        if isinstance(k,str) and k.startswith('?atom'):
             mol[k]["charge"] = "0"
     line = line.rsplit(r'\s+')[3:]
     for i in range(0,len(line),2):
@@ -365,56 +365,5 @@ def parse_sdf_file(filename,verbose = False,data_items=False,tuple_realtions=Fal
     return ret
 
 if __name__ == '__main__':
-    mols = parse_sdf_file("./example.mol",True,True,n=5)
+    mols = parse_sdf_file("./example.mol",True,True,True,n=100)
     pprint(mols[0])
-    
-    # mols = parse_sdf_file("./testSDFs/Compound_000000001_000025000.sdf",True,True)
-    # bond_counts = ContinuousValue()
-    # atom_counts = ContinuousValue()
-
-    # bmax = -10000000
-    # bmin = 100000000
-    # amax = -10000000
-    # amin = 100000000
-
-    # a_dist = {}
-    # b_dist = {}
-
-    # for mol in mols:
-    #     atoms = [v for v in mol if isinstance(v,str) and v.startswith('?atom')]
-    #     bons = [v for v in mol if isinstance(v,str) and v.startswith('(bond')]
-
-    #     b_count = len(bons)
-    #     a_count = len(atoms)
-
-    #     if a_count < amin:
-    #         amin = a_count
-    #     if a_count > amax:
-    #         amax = a_count
-
-    #     if b_count < bmin:
-    #         bmin = b_count
-    #     if b_count > bmax:
-    #         bmax = b_count
-
-    #     bond_counts.update(b_count)
-    #     atom_counts.update(a_count)
-
-    #     if a_count not in a_dist:
-    #         a_dist[a_count] = 0
-    #     if b_count not in b_dist:
-    #         b_dist[b_count] = 0
-
-    #     a_dist[a_count] += 1
-    #     b_dist[b_count] += 1
-
-    # print('Bonds',bond_counts)
-    # print('Min:',bmin,'Max:',bmax)
-    # print('Atoms',atom_counts)
-    # print('Min:',amin,'Max:',amax)
-
-    # with open('atom_dist.txt','w') as out:
-    #     out.write('AtomCount\tFrequency\n')
-    #     keys = list(a_dist.keys())
-    #     for k in sorted(keys):
-    #         out.write(str(k)+'\t'+str(a_dist[k])+'\n')
