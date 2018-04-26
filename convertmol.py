@@ -193,7 +193,7 @@ def apply_m_rad(line,mol):
     if len(line) == 0:
         return mol
     for k in mol:
-        if k.startswith('?atom'):
+        if isinstance(k,str) and k.startswith('?atom'):
             mol[k]["charge"] = "0"
             mol[k]["radical"] = "no radical"
 
@@ -215,7 +215,7 @@ def apply_m_iso(line,mol):
     if len(line) == 0:
         return mol
     for k in mol:
-        if k.startswith('?atom'):
+        if isinstance(k,str) and k.startswith('?atom'):
             mol[k]["mass_diff"] = "0"
 
     line = line.rsplit(r'\s+')[3:]
@@ -311,6 +311,7 @@ def parse_mol(lines, verbose = False, data_items=False, tuple_realtions=False):
             mol['('+' '.join(bond)+')'] = True
 
     ### PROPERTIES BLOCK ###
+
     Ms = []
     for line in lines[bond_dex:]:
         if line == 'M  END':
@@ -365,5 +366,6 @@ def parse_sdf_file(filename,verbose = False,data_items=False,tuple_realtions=Fal
     return ret
 
 if __name__ == '__main__':
-    mols = parse_sdf_file("./example.mol",True,True,True,n=100)
+    # mols = parse_sdf_file("./example.mol",True,True,True,n=100)
+    mols = parse_sdf_file("./testSDFs/Compound_000000001_000025000.sdf",True,True,True,n=25000)
     pprint(mols[0])
